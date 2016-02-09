@@ -24,3 +24,16 @@ C:\Users\User\Desktop\GitApps\CatalogGenerator\CatalogGenerator\obj\Debug\Catalo
 C:\Users\User\Desktop\GitApps\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.csproj.GenerateResource.Cache
 C:\Users\User\Desktop\GitApps\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.exe.manifest
 C:\Users\User\Desktop\GitApps\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.application
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\bin\Debug\CatalogGenerator.exe.config
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.exe
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.pdb
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\bin\Debug\CatalogGenerator.exe.manifest
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\bin\Debug\CatalogGenerator.application
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\bin\Debug\CatalogGenerator.exe
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\bin\Debug\CatalogGenerator.pdb
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.csprojResolveAssemblyReference.cache
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.Form1.resources
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.Properties.Resources.resources
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.csproj.GenerateResource.Cache
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.exe.manifest
+C:\Users\User\Desktop\test\CatalogGenerator\CatalogGenerator\obj\Debug\CatalogGenerator.application
