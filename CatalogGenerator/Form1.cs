@@ -47,7 +47,7 @@ namespace CatalogGenerator
                     double.TryParse(textBoxHeight.Text, out h) &&
                     double.TryParse(textBoxMoulding.Text, out m);
                 
-                cat = new Catalog(textBoxTitle.Text, folderBrowserDialog1.SelectedPath, w, h, m);
+                cat = new Catalog(folderBrowserDialog1.SelectedPath.Split('\\').Last(), folderBrowserDialog1.SelectedPath, w, h, m);
                 
                 printDocument1.Print();
 

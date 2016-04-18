@@ -14,8 +14,7 @@ namespace CatalogGenerator
         public System.Drawing.Bitmap image;
         public System.Drawing.Point location = new System.Drawing.Point();
         public string name;
-        private System.Drawing.Font tagFont = new System.Drawing.Font("Arial", 12);
-        private const int tagHeight = 30;
+        
 
         public void setLocation(int x, int y)
         {
@@ -30,10 +29,10 @@ namespace CatalogGenerator
             e.Graphics.DrawImage(image, location.X, location.Y);
             e.Graphics.DrawString(
                 name,
-                tagFont,
+                CatalogProperties.tagFont,
                 System.Drawing.Brushes.Black,
                location.X,
-               location.Y + image.Height +  tagFont.Height/2);
+               location.Y + image.Height + CatalogProperties.tagFont.Height/2);
 
         }
 
@@ -100,6 +99,11 @@ namespace CatalogGenerator
                 g.DrawImage(image, new Rectangle((int)d,(int)d,image.Width, image.Height));
             }
             image = frame;
+        }
+
+        public bool isHorizontal()
+        {
+            return image.Width > image.Height;
         }
 
     }

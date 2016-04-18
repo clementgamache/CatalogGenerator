@@ -34,9 +34,7 @@
             this.labelMoulding = new System.Windows.Forms.Label();
             this.labelHeight = new System.Windows.Forms.Label();
             this.labelWidth = new System.Windows.Forms.Label();
-            this.textBoxTitle = new System.Windows.Forms.TextBox();
             this.textBoxHeight = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.textBoxMoulding = new System.Windows.Forms.TextBox();
             this.textBoxWidth = new System.Windows.Forms.TextBox();
             this.buttonFolder = new System.Windows.Forms.Button();
@@ -67,24 +65,21 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.labelMoulding, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.labelHeight, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.labelWidth, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxTitle, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxHeight, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxMoulding, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxWidth, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.buttonFolder, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.labelMoulding, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.labelHeight, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.labelWidth, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxHeight, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxMoulding, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxWidth, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.buttonFolder, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 1, 3);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(37, 54);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 5;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(406, 209);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
@@ -115,13 +110,6 @@
             this.labelWidth.TabIndex = 4;
             this.labelWidth.Text = "Inside Width (in)";
             // 
-            // textBoxTitle
-            // 
-            this.textBoxTitle.Location = new System.Drawing.Point(206, 3);
-            this.textBoxTitle.Name = "textBoxTitle";
-            this.textBoxTitle.Size = new System.Drawing.Size(197, 26);
-            this.textBoxTitle.TabIndex = 0;
-            // 
             // textBoxHeight
             // 
             this.textBoxHeight.Location = new System.Drawing.Point(206, 85);
@@ -129,15 +117,6 @@
             this.textBoxHeight.Size = new System.Drawing.Size(197, 26);
             this.textBoxHeight.TabIndex = 2;
             this.textBoxHeight.Text = "0";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(97, 20);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Catalog Title";
             // 
             // textBoxMoulding
             // 
@@ -204,9 +183,7 @@
         private System.Windows.Forms.Label labelMoulding;
         private System.Windows.Forms.Label labelHeight;
         private System.Windows.Forms.Label labelWidth;
-        private System.Windows.Forms.TextBox textBoxTitle;
         private System.Windows.Forms.TextBox textBoxHeight;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBoxMoulding;
         private System.Windows.Forms.TextBox textBoxWidth;
         private System.Windows.Forms.Button buttonFolder;
