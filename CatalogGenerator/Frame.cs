@@ -33,6 +33,7 @@ namespace CatalogGenerator
                 System.Drawing.Brushes.Black,
                location.X,
                location.Y + image.Height + CatalogProperties.tagFont.Height/2);
+            //image.Dispose();
 
         }
 

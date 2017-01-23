@@ -48,7 +48,7 @@ namespace CatalogGenerator
                     Frame frame1 = new Frame(allPaths[i].FullName, width, height, moulding);
                     Frame frame2 = new Frame(allPaths[i + 1].FullName, width, height, moulding);
                     if (frame1.image.Height / frame1.image.Width >= 1 != frame2.image.Height / frame2.image.Width >= 1)
-                        throw new Exception("Error: pair #" + (i / 2).ToString() + " is composed of different ratios");
+                        throw new Exception("Error: pair #" + (i / 2).ToString() + " is composed of different ratios \n" + allPaths[i].FullName + "\n" + allPaths[i+1].FullName);
 
                     doubles.Last().Item2.Add(new Tuple<Frame, Frame>(frame1, frame2));
                 }
@@ -235,260 +235,18 @@ namespace CatalogGenerator
         private void printPictures(System.Drawing.Printing.PrintPageEventArgs e)
         {
             //defining page layout
-            List<int> layout;
             List<Tuple<Frame, Frame>> genre = doubles[0].Item2;
-            int nDoubles = 0;
-            if (genre.Count<=3)
-            {
-                nDoubles = genre.Count;
-            }
-            else if (no4)
-            {
+            List<Tuple<Frame, Frame>> usedTuples = getUsedTuples(ref genre);
+            List<int> layout = getNextLayout(usedTuples, e);
 
-                if (
-                    isHorizontal(genre[0]) &&
-                    isHorizontal(genre[1]) &&
-                    isHorizontal(genre[2]) &&
-                    isHorizontal(genre[3]))
-                {
-                    if (horizontal4 % 2 == 1)
-                    {
-                        nDoubles = 4;
-                    }
-                    else
-                    {
-                        nDoubles = 3;
-                    }
-                    horizontal4++;
-                }
-
-                else nDoubles = 3;
-            }
-            else //!no4
-            {
-                if (genre.Count <= 5) nDoubles = genre.Count;
-                else
-                    nDoubles = 5 - pageIndex % 2;
-            }
-            List<Tuple<Frame, Frame>> usedTuples = new List<Tuple<Frame, Frame>>();
-            for (int i = 0; i < nDoubles; i++)
-            {
-                Tuple<Frame, Frame> transfer = genre[0];
-                genre.Remove(transfer);
-                usedTuples.Add(transfer);
-            }
-            layout = getNextLayout(usedTuples, e);
             //correct the order if it has a conflict of ratio
-            bool ok = correctOrder(usedTuples, layout);
-            while (!ok)
-            {
-                for (int i = 0; i < usedTuples.Count; i++)
-                {
-                    for (int j = i+1; j < usedTuples.Count; j++)
-                    {
-                        
-                        List<Tuple<Frame, Frame>> oneSwap = new List<Tuple<Frame, Frame>>();
-                        oneSwap.AddRange(usedTuples);
-                        Tuple<Frame, Frame> tmp = usedTuples[i];
-                        oneSwap[i] = usedTuples[j];
-                        oneSwap[j] = tmp;
-                        if (correctOrder(oneSwap, layout))
-                        {
-                            ok = true;
-                            usedTuples = oneSwap;
-                            break;
-                        }
-                    }
-                    if (ok) break;
-                }
-            }
-
+            correctRatioConflicts(ref usedTuples, layout);
             
-            //set the height of each section
-            int remainingSpace = e.MarginBounds.Height - CatalogProperties.headerHeight - CatalogProperties.distanceBetweenElementsY - CatalogProperties.footerHeight;
-            foreach (int n in layout)
-            {
-                remainingSpace -= CatalogProperties.distanceBetweenElementsY + CatalogProperties.tagHeight;
-                if (n == 1) remainingSpace -= CatalogProperties.distanceBetweenElementsY + CatalogProperties.tagHeight;
-            }
-            int remainingElements = layout.Count;
-            foreach (int n in layout)
-            {
-                if (n == 1 || n == 3 || n == 4) remainingElements++;
-            }
-            List<Tuple<Frame, Frame>> copy = new List<Tuple<Frame, Frame>>();
-            copy.AddRange(usedTuples);
-            List<int> heights = new List<int>();
-            for (int i = 0; i < layout.Count; i++)
-            {
-                heights.Add(0);
-            }
-            int block = 0;
-            while (copy.Count > 0)
-            {
-                int copyId = 0;
-                int savedCopyId = 0;
-                int minHeightMax = 9999999;
-                int savedId = 0;
-                for (int i = 0; i < layout.Count; i++)
-                {
-                    block = layout[i];
-                    if (heights[i] != 0)
-                    {
-                        continue;
-                    }
-                    int maxHeight = 0;
-                    int maxWidth = 0;
-                    double ratio = (double)copy[copyId].Item1.image.Height / copy[copyId].Item1.image.Width;
-                    if (block == 1) //1 in the line
-                    {
-                        maxWidth = e.MarginBounds.Width;
-                        maxHeight = remainingSpace  / 2;
-                    }
-                    else if (block == 4) // 4 in the line
-                    {
-                        maxWidth = (e.MarginBounds.Width - 3 * CatalogProperties.distanceBetweenElementsX) / 4;
-                        maxHeight = remainingSpace;
-                    }
-                    else //2 on the line
-                    {
-                        maxWidth = (e.MarginBounds.Width - CatalogProperties.distanceBetweenElementsX) / 2;
-                        maxHeight = remainingSpace;
-                    }
-                    
-
-                    maxHeight = Math.Min( (int)(maxWidth * ratio), maxHeight);
-                    minHeightMax = Math.Min(minHeightMax, maxHeight);
-                    if (minHeightMax == maxHeight)
-                    {
-                        savedId = i;
-                        savedCopyId = copyId;
-                    }
-
-                    copyId++;
-                    if (block == 4) copyId++;
-                }
-                int maxAllowed = remainingSpace / remainingElements;
-                int b = layout[savedId];
-                if (b == 3 || b == 4) maxAllowed *= 2;// (int)(maxAllowed*1.2);
-                if (maxAllowed < 0)
-                {
-                    int a = 0;
-                }
-
-                if (minHeightMax >= maxAllowed)
-                {
-                    minHeightMax = maxAllowed;
-                }
-                //{
-                //    for (int i = 0; i < heights.Count; i++)
-                //    {
-                //        if (heights[i] == 0) heights[i] = maxAllowed;
-                //    }
-                //    break;
-                //}
-                
-                    block = layout[savedId];
-                    //remove remaining elements
-                    remainingElements--;
-                    if (block == 1 || block == 3 || block == 4) remainingElements--;
-                    //remove remaining space
-                    remainingSpace -= minHeightMax;
-                    if (block == 1) remainingSpace -= minHeightMax;
-                    //remove element(s) from list
-                    copy.RemoveAt(savedCopyId);
-                    if (block == 4) copy.RemoveAt(savedCopyId);
-                    // set the height
-                    heights[savedId] = minHeightMax;
-                    if (block == 4) heights[savedId] = minHeightMax;
-                    
-            }
-            //set the size
-            int usedId = 0;
-            for (int i = 0; i < layout.Count; i++)
-            {
-                block = layout[i];
-                int times = 1;
-                if (block == 4) times++;
-                for (int j = 0; j < times; j++)
-                {
-                    usedTuples[usedId].Item1.setHeight(heights[i]);
-                    usedTuples[usedId].Item2.setHeight(heights[i]);
-                    usedId++;
-                }
-            }
-            //compute totalspace
-            int totalSpace = 0;
-            usedId = 0;
-            for (int i = 0; i < layout.Count; i++)
-            {
-                block = layout[i];
-                int times = (block == 1) ? 2 : 1;
-                totalSpace += times*(usedTuples[usedId].Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY);
-                usedId++;
-                if(block == 4) usedId++;
-            }
-            //compute additional space between elements
-            int freeSpace = e.MarginBounds.Height - CatalogProperties.headerHeight - CatalogProperties.distanceBetweenElementsY - totalSpace - CatalogProperties.footerHeight;
-            int numberOfLevels = layout.Count;
-            foreach (int n in layout)
-            {
-                if (n == 1) numberOfLevels++;
-            }
-            int additionalDistanceY = freeSpace / (numberOfLevels+1);
-
-            usedId = 0;
-            int yPos = e.MarginBounds.Top + CatalogProperties.headerHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
-            for (int i = 0; i < layout.Count; i++)
-            {
-                block = layout[i];
-                if (block == 1) //1 per line 
-                {
-                    Tuple<Frame, Frame> t = usedTuples[usedId];
-                    int xLoc = e.MarginBounds.Left + e.MarginBounds.Width / 2 - t.Item1.image.Width / 2;
-                    t.Item1.setLocation(xLoc, yPos);
-                    yPos += t.Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
-                    t.Item2.setLocation(xLoc, yPos);
-                    yPos += t.Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
-                    t.Item1.print(e);
-                    t.Item2.print(e);
-                }
-                else if (block == 4)
-                {
-                    Tuple<Frame, Frame> t1 = usedTuples[usedId++];
-                    Tuple<Frame, Frame> t2 = usedTuples[usedId];
-                    int additionalDistanceX = (e.MarginBounds.Width - 4 * t1.Item1.image.Width - 3 * CatalogProperties.distanceBetweenElementsX) / 5;
-                    List<Tuple<Frame, Frame>> ts = new List<Tuple<Frame, Frame>>();
-                    ts.Add(t1);
-                    ts.Add(t2);
-                    int xLoc = e.MarginBounds.Left + additionalDistanceX;
-                    foreach (Tuple<Frame, Frame> t in ts)
-                    {
-                        t.Item1.setLocation(xLoc, yPos);
-                        xLoc += t.Item1.image.Width + additionalDistanceX + CatalogProperties.distanceBetweenElementsX;
-                        t.Item2.setLocation(xLoc, yPos);
-                        xLoc += t.Item1.image.Width + additionalDistanceX + CatalogProperties.distanceBetweenElementsX;
-                        t.Item1.print(e);
-                        t.Item2.print(e);
-                    }
-                    yPos += t1.Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
-                }
-                else
-                {
-                    Tuple<Frame, Frame> t = usedTuples[usedId];
-                    int additionalDistanceX = (e.MarginBounds.Width - 2 * t.Item1.image.Width - CatalogProperties.distanceBetweenElementsX) / 3;
-                    int locX = e.MarginBounds.Left + additionalDistanceX;
-                    t.Item1.setLocation(locX, yPos);
-                    locX += t.Item1.image.Width + CatalogProperties.distanceBetweenElementsX + additionalDistanceX;
-                    t.Item2.setLocation(locX, yPos);
-                    t.Item1.print(e);
-                    t.Item2.print(e);
-                    yPos += t.Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
-                }
-
-                usedId++;
-            }
-                       
+            setImagesSize(usedTuples, layout, e);
+            
+            //mainPrint
+            printLayout(layout, usedTuples, e);
+            
             if (genre.Count > 0)
             {
                 e.HasMorePages = true;
@@ -549,8 +307,280 @@ namespace CatalogGenerator
             return true;
 }
 
+        private List<Tuple<Frame, Frame>> getUsedTuples(ref List<Tuple<Frame, Frame>> genre)
+        {
+            int nDoubles = 0;
+            if (genre.Count <= 3)
+            {
+                nDoubles = genre.Count;
+            }
+            else if (no4)
+            {
 
+                if (
+                    isHorizontal(genre[0]) &&
+                    isHorizontal(genre[1]) &&
+                    isHorizontal(genre[2]) &&
+                    isHorizontal(genre[3]))
+                {
+                    if (horizontal4 % 2 == 1)
+                    {
+                        nDoubles = 4;
+                    }
+                    else
+                    {
+                        nDoubles = 3;
+                    }
+                    horizontal4++;
+                }
 
+                else nDoubles = 3;
+            }
+            else //!no4
+            {
+                if (genre.Count <= 5) nDoubles = genre.Count;
+                else
+                    nDoubles = 5 - pageIndex % 2;
+            }
+            List<Tuple<Frame, Frame>> usedTuples = new List<Tuple<Frame, Frame>>();
+            for (int i = 0; i < nDoubles; i++)
+            {
+                Tuple<Frame, Frame> transfer = genre[0];
+                genre.Remove(transfer);
+                usedTuples.Add(transfer);
+            }
+            return usedTuples;
+        }
         
+        private void correctRatioConflicts(ref List<Tuple<Frame, Frame>> usedTuples, List<int> layout)
+        {
+            bool ok = correctOrder(usedTuples, layout);
+            while (!ok)
+            {
+                for (int i = 0; i < usedTuples.Count; i++)
+                {
+                    for (int j = i + 1; j < usedTuples.Count; j++)
+                    {
+
+                        List<Tuple<Frame, Frame>> oneSwap = new List<Tuple<Frame, Frame>>();
+                        oneSwap.AddRange(usedTuples);
+                        Tuple<Frame, Frame> tmp = usedTuples[i];
+                        oneSwap[i] = usedTuples[j];
+                        oneSwap[j] = tmp;
+                        if (correctOrder(oneSwap, layout))
+                        {
+                            ok = true;
+                            usedTuples = oneSwap;
+                            break;
+                        }
+                    }
+                    if (ok) break;
+                }
+            }
+        }
+        private int getFirstRemainingSpace(List<int> layout, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            int remainingSpace = e.MarginBounds.Height - CatalogProperties.headerHeight - CatalogProperties.distanceBetweenElementsY - CatalogProperties.footerHeight;
+            foreach (int n in layout)
+            {
+                remainingSpace -= CatalogProperties.distanceBetweenElementsY + CatalogProperties.tagHeight;
+                if (n == 1) remainingSpace -= CatalogProperties.distanceBetweenElementsY + CatalogProperties.tagHeight;
+            }
+            return remainingSpace;
+        }
+        private int getFirstRemainingElements(List<int> layout)
+        {
+            int remainingElements = layout.Count;
+            foreach (int n in layout)
+            {
+                if (n == 1 || n == 3 || n == 4) remainingElements++;
+            }
+            return remainingElements;
+        }
+
+        private List<int> getHeightOfEachSection(List<Tuple<Frame, Frame>> usedTuples, List<int> layout, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            int remainingSpace = getFirstRemainingSpace(layout, e);
+            int remainingElements = getFirstRemainingElements(layout);
+            List<Tuple<Frame, Frame>> copy = new List<Tuple<Frame, Frame>>();
+            copy.AddRange(usedTuples);
+            List<int> heights = new List<int>();
+            for (int i = 0; i < layout.Count; i++)
+            {
+                heights.Add(0);
+            }
+            int block = 0;
+            while (copy.Count > 0)
+            {
+                int copyId = 0;
+                int savedCopyId = 0;
+                int minHeightMax = 9999999;
+                int savedId = 0;
+                for (int i = 0; i < layout.Count; i++)
+                {
+                    block = layout[i];
+                    if (heights[i] != 0)
+                    {
+                        continue;
+                    }
+                    int maxHeight = 0;
+                    int maxWidth = 0;
+                    double ratio = (double)copy[copyId].Item1.image.Height / copy[copyId].Item1.image.Width;
+                    if (block == 1) //1 in the line
+                    {
+                        maxWidth = e.MarginBounds.Width;
+                        maxHeight = remainingSpace / 2;
+                    }
+                    else if (block == 4) // 4 in the line
+                    {
+                        maxWidth = (e.MarginBounds.Width - 3 * CatalogProperties.distanceBetweenElementsX) / 4;
+                        maxHeight = remainingSpace;
+                    }
+                    else //2 on the line
+                    {
+                        maxWidth = (e.MarginBounds.Width - CatalogProperties.distanceBetweenElementsX) / 2;
+                        maxHeight = remainingSpace;
+                    }
+
+
+                    maxHeight = Math.Min((int)(maxWidth * ratio), maxHeight);
+                    minHeightMax = Math.Min(minHeightMax, maxHeight);
+                    if (minHeightMax == maxHeight)
+                    {
+                        savedId = i;
+                        savedCopyId = copyId;
+                    }
+
+                    copyId++;
+                    if (block == 4) copyId++;
+                }
+                int maxAllowed = remainingSpace / remainingElements;
+                int b = layout[savedId];
+                if (b == 3 || b == 4) maxAllowed *= 2;// (int)(maxAllowed*1.2);
+                if (maxAllowed < 0)
+                {
+                    int a = 0;
+                }
+
+                if (minHeightMax >= maxAllowed)
+                {
+                    minHeightMax = maxAllowed;
+                }
+
+
+                block = layout[savedId];
+                //remove remaining elements
+                remainingElements--;
+                if (block == 1 || block == 3 || block == 4) remainingElements--;
+                //remove remaining space
+                remainingSpace -= minHeightMax;
+                if (block == 1) remainingSpace -= minHeightMax;
+                //remove element(s) from list
+                copy.RemoveAt(savedCopyId);
+                if (block == 4) copy.RemoveAt(savedCopyId);
+                // set the height
+                heights[savedId] = minHeightMax;
+                if (block == 4) heights[savedId] = minHeightMax;
+                
+            }
+            return heights;
+        }
+        private void setImagesSize(List<Tuple<Frame, Frame>> usedTuples, List<int> layout, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            List<int> heights = getHeightOfEachSection(usedTuples, layout, e);
+            int block = 0;
+            int usedId = 0;
+            for (int i = 0; i < layout.Count; i++)
+            {
+                block = layout[i];
+                int times = 1;
+                if (block == 4) times++;
+                for (int j = 0; j < times; j++)
+                {
+                    usedTuples[usedId].Item1.setHeight(heights[i]);
+                    usedTuples[usedId].Item2.setHeight(heights[i]);
+                    usedId++;
+                }
+            }
+        }
+        private int getTotalSpace(List<int> layout, List<Tuple<Frame, Frame>> usedTuples)
+        {
+            int totalSpace = 0;
+            int block = 0;
+            int usedId = 0;
+            for (int i = 0; i < layout.Count; i++)
+            {
+                block = layout[i];
+                int times = (block == 1) ? 2 : 1;
+                totalSpace += times * (usedTuples[usedId].Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY);
+                usedId++;
+                if (block == 4) usedId++;
+            }
+            return totalSpace;
+        }
+
+        private void printLayout(List<int> layout, List<Tuple<Frame, Frame>> usedTuples, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            int totalSpace = getTotalSpace(layout, usedTuples);
+            int freeSpace = e.MarginBounds.Height - CatalogProperties.headerHeight - CatalogProperties.distanceBetweenElementsY - totalSpace - CatalogProperties.footerHeight;
+            int numberOfLevels = layout.Count;
+            foreach (int n in layout)
+            {
+                if (n == 1) numberOfLevels++;
+            }
+            int additionalDistanceY = freeSpace / (numberOfLevels + 1);
+            int yPos = e.MarginBounds.Top + CatalogProperties.headerHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
+            int usedId = 0;
+            int block = 0;
+            for (int i = 0; i < layout.Count; i++)
+            {
+                block = layout[i];
+                if (block == 1) //1 per line 
+                {
+                    Tuple<Frame, Frame> t = usedTuples[usedId];
+                    int xLoc = e.MarginBounds.Left + e.MarginBounds.Width / 2 - t.Item1.image.Width / 2;
+                    t.Item1.setLocation(xLoc, yPos);
+                    yPos += t.Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
+                    t.Item2.setLocation(xLoc, yPos);
+                    yPos += t.Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
+                    t.Item1.print(e);
+                    t.Item2.print(e);
+                }
+                else if (block == 4)
+                {
+                    Tuple<Frame, Frame> t1 = usedTuples[usedId++];
+                    Tuple<Frame, Frame> t2 = usedTuples[usedId];
+                    int additionalDistanceX = (e.MarginBounds.Width - 4 * t1.Item1.image.Width - 3 * CatalogProperties.distanceBetweenElementsX) / 5;
+                    List<Tuple<Frame, Frame>> ts = new List<Tuple<Frame, Frame>>();
+                    ts.Add(t1);
+                    ts.Add(t2);
+                    int xLoc = e.MarginBounds.Left + additionalDistanceX;
+                    foreach (Tuple<Frame, Frame> t in ts)
+                    {
+                        t.Item1.setLocation(xLoc, yPos);
+                        xLoc += t.Item1.image.Width + additionalDistanceX + CatalogProperties.distanceBetweenElementsX;
+                        t.Item2.setLocation(xLoc, yPos);
+                        xLoc += t.Item1.image.Width + additionalDistanceX + CatalogProperties.distanceBetweenElementsX;
+                        t.Item1.print(e);
+                        t.Item2.print(e);
+                    }
+                    yPos += t1.Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
+                }
+                else
+                {
+                    Tuple<Frame, Frame> t = usedTuples[usedId];
+                    int additionalDistanceX = (e.MarginBounds.Width - 2 * t.Item1.image.Width - CatalogProperties.distanceBetweenElementsX) / 3;
+                    int locX = e.MarginBounds.Left + additionalDistanceX;
+                    t.Item1.setLocation(locX, yPos);
+                    locX += t.Item1.image.Width + CatalogProperties.distanceBetweenElementsX + additionalDistanceX;
+                    t.Item2.setLocation(locX, yPos);
+                    t.Item1.print(e);
+                    t.Item2.print(e);
+                    yPos += t.Item1.image.Height + CatalogProperties.tagHeight + CatalogProperties.distanceBetweenElementsY + additionalDistanceY;
+                }
+
+                usedId++;
+            }
+        }
     }
 }
