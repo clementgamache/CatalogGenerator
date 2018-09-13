@@ -39,7 +39,7 @@ namespace CatalogGenerator
                     if (ImageExtensions.Contains(Path.GetExtension(f.FullName).ToUpperInvariant()))
                         allPaths.Add(f);
                 }
-                if (allPaths.Count % 2 != 0) throw new Exception("Error: number of pictures should be an even number");
+                if (allPaths.Count % 2 != 0) throw new Exception("Error: number of pictures should be an even number. \nDirectory: " + dir.FullName);
 
                 doubles.Add(new Tuple<string, List<Tuple<Frame, Frame>>>(dir.Name, new List<Tuple<Frame, Frame>>()));
                 for (int i = 0; i < allPaths.Count; i += 2)
@@ -186,8 +186,10 @@ namespace CatalogGenerator
                     return layouts[d];
                 }
             }
+
             else //count == 5
             {
+                
                 List<List<int>> layouts = new List<List<int>>();
                 layouts.Add(new List<int>(new int[] { 4, 4, 2 }));
                 layouts.Add(new List<int>(new int[] { 2, 4, 4 }));
@@ -340,7 +342,7 @@ namespace CatalogGenerator
             {
                 if (genre.Count <= 5) nDoubles = genre.Count;
                 else
-                    nDoubles = 5 - pageIndex % 2;
+                    nDoubles = 5;// - pageIndex % 2;
             }
             List<Tuple<Frame, Frame>> usedTuples = new List<Tuple<Frame, Frame>>();
             for (int i = 0; i < nDoubles; i++)

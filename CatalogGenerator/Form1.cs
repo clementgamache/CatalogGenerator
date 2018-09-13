@@ -77,5 +77,11 @@ namespace CatalogGenerator
         {
 
         }
+
+        private void checkBoxSquares_CheckedChanged(object sender, EventArgs e)
+        {
+            textBoxHeight.Enabled = textBoxWidth.Enabled = textBoxMoulding.Enabled = !checkBoxSquares.Checked;
+            Frame.makeEveryImageSquare = checkBoxSquares.Checked;
+        }
     }
 }
